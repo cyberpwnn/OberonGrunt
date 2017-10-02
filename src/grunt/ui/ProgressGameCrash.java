@@ -52,7 +52,7 @@ public class ProgressGameCrash extends JFrame
 						continue;
 					}
 
-					lblDownloading.setForeground(UX.c);
+					lblDownloading.setForeground(new Color(255, 69, 0));
 				}
 			}
 		}.start();
