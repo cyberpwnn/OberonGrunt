@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<launch4jConfig>
+  <dontWrapJar>false</dontWrapJar>
+  <headerType>gui</headerType>
+  <jar>C:\Users\cyberpwn\Documents\development\workspace\Grunt\release\Grunt.jar</jar>
+  <outfile>C:\Users\cyberpwn\Documents\development\workspace\Grunt\release\Grunt.exe</outfile>
+  <errTitle>Y U NO JAVA?!?!?!?!?!?!?!?!?</errTitle>
+  <cmdLine></cmdLine>
+  <chdir>.</chdir>
+  <priority>high</priority>
+  <downloadUrl>http://java.com/download</downloadUrl>
+  <supportUrl></supportUrl>
+  <stayAlive>false</stayAlive>
+  <restartOnCrash>false</restartOnCrash>
+  <manifest></manifest>
+  <icon>C:\Users\cyberpwn\Documents\development\workspace\Grunt\release\gem_ruby_KZk_icon.ico</icon>
+  <singleInstance>
+    <mutexName>GFGRUNT</mutexName>
+    <windowTitle></windowTitle>
+  </singleInstance>
+  <jre>
+    <path>C:\Program Files\Java\jre1.8.0_144</path>
+    <bundledJre64Bit>true</bundledJre64Bit>
+    <bundledJreAsFallback>false</bundledJreAsFallback>
+    <minVersion></minVersion>
+    <maxVersion></maxVersion>
+    <jdkPreference>preferJre</jdkPreference>
+    <runtimeBits>64/32</runtimeBits>
+    <initialHeapSize>1</initialHeapSize>
+    <maxHeapSize>1000</maxHeapSize>
+  </jre>
+  <messages>
+    <startupErr>Fuck... Something happened.</startupErr>
+    <bundledJreErr>Fuck, Fuck, Fuck, Fuck...</bundledJreErr>
+    <jreVersionErr>Fuck, Fuck, Fuck, Fuck...</jreVersionErr>
+    <launcherErr>God fucking dammit.</launcherErr>
+    <instanceAlreadyExistsMsg>Y U NO DOUBLE LAUNCH</instanceAlreadyExistsMsg>
+  </messages>
+</launch4jConfig>
