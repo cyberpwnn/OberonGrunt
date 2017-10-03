@@ -4,7 +4,6 @@ import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -17,7 +16,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
-import java.util.zip.ZipInputStream;
 
 import com.google.common.collect.Lists;
 import com.google.common.io.Files;
@@ -27,6 +25,7 @@ import com.mojang.authlib.properties.PropertyMap;
 import grunt.ClientAuthentication.AuthenticationResponse;
 import grunt.json.JSONArray;
 import grunt.json.JSONObject;
+import grunt.ui.ProgressGameCrash;
 import grunt.ui.ProgressLogin;
 import grunt.ui.ProgressRunning;
 import grunt.ui.ProgressStart;
@@ -118,12 +117,16 @@ public class Client
 			int code = launchGame();
 			System.out.println("Process exited with error code " + code);
 
-			if(code != 0)
+			if(code == 0)
 			{
-
+				ProgressGameCrash c = new ProgressGameCrash();
+				c.setVisible(true);
 			}
 
-			System.exit(0);
+			else
+			{
+				System.exit(0);
+			}
 		}
 
 		catch(Exception e)
@@ -331,12 +334,15 @@ public class Client
 		File vmv = new File(fasm, "manifest.json");
 		File iid = new File(fasm, "asset-index.json");
 		File cli = new File(fbin, "client.jar");
-		File cc = new File(fasm, "cdn.json");
-
+		File rxm = new File(fasm, "version.json");
+		File cms = new File(fasm, "cms.gct");
+		String dlx = URLX.CMS;
 		ps = new ProgressStart();
 		q.q(URLX.VERSION_META, vm);
-		q.q(URLX.CDN, cc);
+		q.q(URLX.RDM, rxm);
 		q.flush();
+		JSONObject vrs = readJSON(rxm);
+		dlx = dlx.replace("%v%", vrs.getString("version"));
 		JSONObject jvm = readJSON(vm);
 		writeJSON(jvm, vm);
 		JSONArray ja = jvm.getJSONArray("versions");
@@ -362,11 +368,20 @@ public class Client
 		JSONObject client = downloads.getJSONObject("client");
 		q.q(assetIndex.getString("url"), iid);
 		q.flush();
+		long sd = Long.valueOf(vrs.getString("size"));
+		boolean extract = false;
+
+		if(!cms.exists() || cms.length() != sd)
+		{
+			cms.delete();
+			System.out.println("Game Content out of date or missing. Downloading.");
+			q.q(dlx, cms, sd);
+			extract = true;
+		}
+
 		JSONObject assets = readJSON(iid);
 		JSONArray libraries = manifest.getJSONArray("libraries");
 		JSONObject objects = assets.getJSONObject("objects");
-		JSONObject cdn = readJSON(cc);
-		JSONArray pack = cdn.getJSONArray("packages");
 		Iterator<String> itObject = objects.keys();
 
 		q.q(client.getString("url"), cli, client.getLong("size"));
@@ -389,15 +404,6 @@ public class Client
 
 			f.getParentFile().mkdirs();
 			q.q("http://resources.download.minecraft.net/" + hashRoot + "/" + hash, f, size);
-		}
-
-		for(int i = 0; i < pack.length(); i++)
-		{
-			JSONObject p = pack.getJSONObject(i);
-			String url = URLX.CDNX + p.getString("path");
-			File f = new File(fgame, p.getString("path"));
-			f.getParentFile().mkdirs();
-			q.q(url, f, p.getLong("size"));
 		}
 
 		for(int i = 0; i < libraries.length(); i++)
@@ -438,11 +444,10 @@ public class Client
 							{
 								try
 								{
-									test(f, fnatives);
+									extractNatives(f, fnatives);
 								}
 								catch(IOException e)
 								{
-									// TODO Auto-generated catch block
 									e.printStackTrace();
 								}
 							}
@@ -516,12 +521,32 @@ public class Client
 		}
 
 		q.flush();
+		inject(cms, fgame, extract);
 		cleanup();
 		hackOptions();
 		System.out.println("Game Downloaded");
 		ps.setVisible(false);
 		x = ps.getLocation().getX();
 		y = ps.getLocation().getY();
+	}
+
+	private void inject(File zip, File dir, boolean ex)
+	{
+		if(ex)
+		{
+			dir.mkdirs();
+			System.out.println("Game Extract Requested");
+
+			try
+			{
+				extractAll(zip, dir);
+			}
+
+			catch(IOException e)
+			{
+				e.printStackTrace();
+			}
+		}
 	}
 
 	private void hackOptions() throws IOException
@@ -666,51 +691,7 @@ public class Client
 		return new JSONObject(content);
 	}
 
-	public void extractFiles(File zipFile, File folder)
-	{
-		byte[] buffer = new byte[1024];
-
-		try
-		{
-			if(!folder.exists())
-			{
-				folder.mkdir();
-			}
-
-			ZipInputStream zis = new ZipInputStream(new FileInputStream(zipFile));
-			ZipEntry ze = zis.getNextEntry();
-
-			while(ze != null)
-			{
-				String fileName = ze.getName();
-				File newFile = new File(folder + File.separator + fileName);
-				System.out.println("Extract: " + newFile.getAbsoluteFile().getName() + " from " + zipFile.getName());
-				new File(newFile.getParent()).mkdirs();
-				FileOutputStream fos = new FileOutputStream(newFile);
-
-				int len;
-
-				while((len = zis.read(buffer)) > 0)
-				{
-					fos.write(buffer, 0, len);
-				}
-
-				fos.close();
-
-				ze = zis.getNextEntry();
-			}
-
-			zis.closeEntry();
-			zis.close();
-		}
-
-		catch(IOException ex)
-		{
-
-		}
-	}
-
-	private static void test(File zip, File lfolder) throws IOException
+	private static void extractNatives(File zip, File lfolder) throws IOException
 	{
 		final ZipFile file = new ZipFile(zip);
 
@@ -727,7 +708,7 @@ public class Client
 					continue;
 				}
 
-				readInputStream(entry.getName(), file.getInputStream(entry), lfolder, zip);
+				writeStream(entry.getName(), file.getInputStream(entry), lfolder, zip);
 			}
 		}
 
@@ -737,17 +718,48 @@ public class Client
 		}
 	}
 
-	private static int readInputStream(String n, final InputStream is, File lfolder, File zip) throws IOException
+	private static void extractAll(File zip, File lfolder) throws IOException
 	{
+		final ZipFile file = new ZipFile(zip);
+
+		try
+		{
+			final Enumeration<? extends ZipEntry> entries = file.entries();
+
+			while(entries.hasMoreElements())
+			{
+				final ZipEntry entry = entries.nextElement();
+
+				if(entry.isDirectory())
+				{
+					new File(lfolder, entry.getName()).mkdirs();
+					continue;
+				}
+
+				writeStream(entry.getName(), file.getInputStream(entry), lfolder, zip);
+			}
+		}
+
+		finally
+		{
+			file.close();
+		}
+	}
+
+	private static int writeStream(String n, final InputStream is, File lfolder, File zip) throws IOException
+	{
+		lfolder.mkdirs();
 		FileOutputStream fos = new FileOutputStream(new File(lfolder, n));
 		final byte[] buf = new byte[8192];
 		int read = 0;
 		int cntRead;
+
 		while((cntRead = is.read(buf, 0, buf.length)) >= 0)
 		{
 			read += cntRead;
 			fos.write(buf, 0, cntRead);
 		}
+
 		System.out.println("Extract: " + n + " from " + zip.getName());
 
 		fos.close();

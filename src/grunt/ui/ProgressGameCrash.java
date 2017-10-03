@@ -1,14 +1,18 @@
 package grunt.ui;
 
 import java.awt.Color;
+import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.Point;
 import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
+import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -89,9 +93,45 @@ public class ProgressGameCrash extends JFrame
 		lblGameCrash.setForeground(new Color(255, 69, 0));
 		lblGameCrash.setFont(new Font("Yu Gothic UI Light", Font.PLAIN, 32));
 		lblGameCrash.setBackground(new Color(255, 69, 0));
+
+		JButton btnRelaunch = new JButton("Relaunch");
+		btnRelaunch.setForeground(Color.BLACK);
+		btnRelaunch.setFont(new Font("Yu Gothic UI Light", Font.PLAIN, 18));
+		btnRelaunch.setBackground(Color.WHITE);
+		btnRelaunch.addActionListener(new ActionListener()
+		{
+			@Override
+			public void actionPerformed(ActionEvent e)
+			{
+				EventQueue.invokeLater(new Runnable()
+				{
+					@Override
+					public void run()
+					{
+						setVisible(false);
+						Client c = new Client();
+						c.logIn();
+					}
+				});
+			}
+		});
+
+		JButton btnQuit = new JButton("Quit");
+		btnQuit.setForeground(Color.BLACK);
+		btnQuit.setFont(new Font("Yu Gothic UI Light", Font.PLAIN, 18));
+		btnQuit.setBackground(Color.WHITE);
+		btnQuit.addActionListener(new ActionListener()
+		{
+			@Override
+			public void actionPerformed(ActionEvent e)
+			{
+				System.exit(0);
+			}
+		});
+
 		GroupLayout gl_panel = new GroupLayout(panel);
-		gl_panel.setHorizontalGroup(gl_panel.createParallelGroup(Alignment.LEADING).addGroup(gl_panel.createSequentialGroup().addGap(44).addGroup(gl_panel.createParallelGroup(Alignment.LEADING).addGroup(gl_panel.createSequentialGroup().addComponent(lblGameCrash, GroupLayout.PREFERRED_SIZE, 232, GroupLayout.PREFERRED_SIZE).addContainerGap()).addGroup(gl_panel.createSequentialGroup().addComponent(lblDownloading, GroupLayout.PREFERRED_SIZE, 232, Short.MAX_VALUE).addGap(44)))));
-		gl_panel.setVerticalGroup(gl_panel.createParallelGroup(Alignment.LEADING).addGroup(gl_panel.createSequentialGroup().addGap(26).addComponent(lblDownloading).addPreferredGap(ComponentPlacement.RELATED).addComponent(lblGameCrash).addContainerGap(152, Short.MAX_VALUE)));
+		gl_panel.setHorizontalGroup(gl_panel.createParallelGroup(Alignment.LEADING).addGroup(gl_panel.createSequentialGroup().addGap(44).addGroup(gl_panel.createParallelGroup(Alignment.LEADING).addGroup(gl_panel.createSequentialGroup().addComponent(lblGameCrash, GroupLayout.PREFERRED_SIZE, 232, GroupLayout.PREFERRED_SIZE).addContainerGap()).addGroup(gl_panel.createSequentialGroup().addComponent(lblDownloading, GroupLayout.PREFERRED_SIZE, 232, Short.MAX_VALUE).addGap(44)))).addGroup(Alignment.TRAILING, gl_panel.createSequentialGroup().addContainerGap(120, Short.MAX_VALUE).addComponent(btnQuit, GroupLayout.PREFERRED_SIZE, 82, GroupLayout.PREFERRED_SIZE).addGap(118)).addGroup(gl_panel.createSequentialGroup().addGap(104).addComponent(btnRelaunch, GroupLayout.PREFERRED_SIZE, 111, GroupLayout.PREFERRED_SIZE).addContainerGap(105, Short.MAX_VALUE)));
+		gl_panel.setVerticalGroup(gl_panel.createParallelGroup(Alignment.LEADING).addGroup(gl_panel.createSequentialGroup().addGap(26).addComponent(lblDownloading).addPreferredGap(ComponentPlacement.RELATED).addComponent(lblGameCrash).addGap(30).addComponent(btnRelaunch, GroupLayout.PREFERRED_SIZE, 33, GroupLayout.PREFERRED_SIZE).addPreferredGap(ComponentPlacement.RELATED).addComponent(btnQuit, GroupLayout.PREFERRED_SIZE, 33, GroupLayout.PREFERRED_SIZE).addContainerGap(50, Short.MAX_VALUE)));
 		panel.setLayout(gl_panel);
 		contentPane.setLayout(gl_contentPane);
 		setVisible(true);

@@ -30,6 +30,11 @@ public class DLQ
 
 	public void q(URL url, File f, long size, long modified, Runnable r)
 	{
+		if(f.exists() && f.length() == size)
+		{
+			r.run();
+		}
+
 		queue.add(new DL(url, f, size)
 		{
 			@Override

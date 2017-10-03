@@ -4,7 +4,7 @@
   <groupId>org.cyberpwn</groupId>
   <artifactId>Grunt</artifactId>
   <name>Grunt</name>
-  <version>1.0</version>
+  <version>1.1</version>
   <build>
     <plugins>
       <plugin>

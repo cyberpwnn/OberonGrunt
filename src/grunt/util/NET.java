@@ -6,7 +6,7 @@ import java.net.URL;
 
 public class NET
 {
-	public static int getFileSize(URL url)
+	public static long getFileSize(URL url)
 	{
 		HttpURLConnection conn = null;
 
@@ -15,7 +15,8 @@ public class NET
 			conn = (HttpURLConnection) url.openConnection();
 			conn.setRequestMethod("HEAD");
 			conn.getInputStream();
-			return conn.getContentLength();
+			long k = conn.getContentLength();
+			return k;
 		}
 
 		catch(IOException e)
