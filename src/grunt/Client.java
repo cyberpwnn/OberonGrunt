@@ -117,7 +117,7 @@ public class Client
 			int code = launchGame();
 			System.out.println("Process exited with error code " + code);
 
-			if(code == 0)
+			if(code != 0)
 			{
 				ProgressGameCrash c = new ProgressGameCrash();
 				c.setVisible(true);
