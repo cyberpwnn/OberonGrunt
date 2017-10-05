@@ -339,6 +339,12 @@ public class Client
 		String dlx = URLX.CMS;
 		ps = new ProgressStart();
 		q.q(URLX.VERSION_META, vm);
+
+		if(rxm.exists())
+		{
+			rxm.delete();
+		}
+
 		q.q(URLX.RDM, rxm);
 		q.flush();
 		JSONObject vrs = readJSON(rxm);
