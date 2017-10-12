@@ -15,6 +15,8 @@ import com.mojang.authlib.properties.PropertyMap;
 import com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService;
 import com.mojang.authlib.yggdrasil.YggdrasilUserAuthentication;
 
+import grunt.ui.ProgressAuthenticating;
+
 public class ClientAuthentication
 {
 	public enum AuthenticationResponse
@@ -55,24 +57,102 @@ public class ClientAuthentication
 
 	public AuthenticationResponse authenticate()
 	{
+		System.out.println("Authenticating");
+		ProgressAuthenticating authx = new ProgressAuthenticating();
+		authx.setVisible(true);
+		ProgressAuthenticating.panel.setProgress(0);
+
 		try
 		{
 			YggdrasilUserAuthentication auth = (YggdrasilUserAuthentication) new YggdrasilAuthenticationService(Proxy.NO_PROXY, "1").createUserAuthentication(Agent.MINECRAFT);
 			auth.setUsername(username);
 			auth.setPassword(password);
+
+			try
+			{
+				Thread.sleep(166);
+			}
+
+			catch(InterruptedException e1)
+			{
+				e1.printStackTrace();
+			}
+
+			ProgressAuthenticating.panel.setProgress(38);
+
+			try
+			{
+				Thread.sleep(100);
+			}
+
+			catch(InterruptedException e1)
+			{
+				e1.printStackTrace();
+			}
+
 			auth.logIn();
+			ProgressAuthenticating.panel.setProgress(46);
 			token = auth.getAuthenticatedToken();
 			uuid = auth.getSelectedProfile().getId().toString().replaceAll("-", "");
 			profileName = auth.getSelectedProfile().getName();
 			profileType = auth.getUserType().getName();
 			profileSettings = auth.getSelectedProfile().getProperties();
+
+			try
+			{
+				Thread.sleep(100);
+			}
+
+			catch(InterruptedException e1)
+			{
+				e1.printStackTrace();
+			}
+
+			ProgressAuthenticating.panel.setProgress(66);
+
+			try
+			{
+				Thread.sleep(100);
+			}
+
+			catch(InterruptedException e1)
+			{
+				e1.printStackTrace();
+			}
+
 			saveUserToken();
+			ProgressAuthenticating.panel.setProgress(100);
+
+			try
+			{
+				Thread.sleep(100);
+			}
+
+			catch(InterruptedException e1)
+			{
+				e1.printStackTrace();
+			}
+
+			authx.setVisible(false);
 
 			return AuthenticationResponse.SUCCESS;
 		}
 
 		catch(Exception e)
 		{
+			ProgressAuthenticating.panel.setProgress(0);
+
+			try
+			{
+				Thread.sleep(500);
+			}
+
+			catch(InterruptedException e1)
+			{
+				e1.printStackTrace();
+			}
+
+			authx.setVisible(false);
 			return AuthenticationResponse.FAILED;
 		}
 	}

@@ -247,6 +247,7 @@ public class Client
 			if(line.contains("LWJGL Version: 2.9.1"))
 			{
 				System.out.println("[GRUNT]: CLOSE UI");
+				System.out.println("COUNT: " + count);
 				ru.setVisible(false);
 			}
 
