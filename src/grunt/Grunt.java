@@ -4,33 +4,43 @@ import java.io.File;
 
 public class Grunt
 {
+	public static boolean localfs = false;
+
 	public static void main(String[] arg)
 	{
-		if(arg.length == 1)
+		if(arg.length > 0)
 		{
-			if(arg[0].equalsIgnoreCase("-fs"))
+			for(String is : arg)
 			{
-				File f = new File("f");
-
-				System.out.println("Checking all files in " + f.getAbsolutePath());
-
-				if(f.exists() && f.isDirectory())
+				if(is.equalsIgnoreCase("-fs"))
 				{
-					System.out.println("Checking " + f.listFiles().length + " Files");
+					File f = new File("f");
 
-					for(File i : f.listFiles())
+					System.out.println("Checking all files in " + f.getAbsolutePath());
+
+					if(f.exists() && f.isDirectory())
 					{
-						System.out.println(i.getName() + ": " + i.length());
+						System.out.println("Checking " + f.listFiles().length + " Files");
+
+						for(File i : f.listFiles())
+						{
+							System.out.println(i.getName() + ": " + i.length());
+						}
 					}
+
+					else
+					{
+						System.out.println("Error " + f.getAbsolutePath() + " does not exist (or isnt a folder)");
+					}
+
+					return;
 				}
 
-				else
+				if(is.equalsIgnoreCase("-localfs"))
 				{
-					System.out.println("Error " + f.getAbsolutePath() + " does not exist (or isnt a folder)");
+					localfs = true;
 				}
 			}
-
-			return;
 		}
 
 		Client c = new Client();

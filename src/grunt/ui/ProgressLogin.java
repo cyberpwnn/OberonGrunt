@@ -98,11 +98,12 @@ public abstract class ProgressLogin extends JFrame
 		lblDownloading.setHorizontalAlignment(SwingConstants.CENTER);
 		lblDownloading.setFont(new Font("Yu Gothic UI Light", Font.PLAIN, 24));
 
+		UX.c(null);
 		txtE = new JTextField();
-		txtE.setForeground(Color.BLACK);
-		txtE.setBackground(Color.GRAY);
+		txtE.setForeground(UX.c);
+		txtE.setBackground(Color.DARK_GRAY);
 		txtE.setHorizontalAlignment(SwingConstants.CENTER);
-		txtE.setFont(new Font("Yu Gothic Light", Font.PLAIN, 18));
+		txtE.setFont(new Font("Yu Gothic Light", Font.BOLD, 18));
 		txtE.setColumns(10);
 		txtE.requestFocusInWindow();
 
@@ -112,21 +113,19 @@ public abstract class ProgressLogin extends JFrame
 		lblPassword.setFont(new Font("Yu Gothic UI Light", Font.PLAIN, 24));
 
 		txtP = new JPasswordField();
-		txtP.setForeground(Color.BLACK);
-		txtP.setBackground(Color.GRAY);
+		txtP.setForeground(UX.c);
+		txtP.setBackground(Color.DARK_GRAY);
 		txtP.setHorizontalAlignment(SwingConstants.CENTER);
-		txtP.setFont(new Font("Yu Gothic Light", Font.PLAIN, 18));
+		txtP.setFont(new Font("Yu Gothic Light", Font.BOLD, 18));
 		txtP.setColumns(10);
 
 		JButton btnLogin = new JButton("Login");
 		btnLogin.setForeground(Color.BLACK);
 		btnLogin.setBackground(Color.WHITE);
 		btnLogin.setFont(new Font("Yu Gothic UI Light", Font.PLAIN, 18));
-
-		JLabel lblX = new JLabel("X");
 		GroupLayout gl_panel = new GroupLayout(panel);
-		gl_panel.setHorizontalGroup(gl_panel.createParallelGroup(Alignment.LEADING).addGroup(gl_panel.createSequentialGroup().addGroup(gl_panel.createParallelGroup(Alignment.LEADING).addGroup(gl_panel.createSequentialGroup().addContainerGap().addComponent(lblDownloading, GroupLayout.DEFAULT_SIZE, 300, Short.MAX_VALUE)).addGroup(gl_panel.createSequentialGroup().addGap(51).addComponent(txtE, GroupLayout.PREFERRED_SIZE, 215, GroupLayout.PREFERRED_SIZE)).addGroup(gl_panel.createSequentialGroup().addContainerGap().addComponent(lblPassword, GroupLayout.PREFERRED_SIZE, 290, GroupLayout.PREFERRED_SIZE))).addContainerGap()).addGroup(gl_panel.createSequentialGroup().addContainerGap(59, Short.MAX_VALUE).addComponent(txtP, GroupLayout.PREFERRED_SIZE, 215, GroupLayout.PREFERRED_SIZE).addGap(46)).addGroup(gl_panel.createSequentialGroup().addGap(113).addComponent(btnLogin, GroupLayout.PREFERRED_SIZE, 82, GroupLayout.PREFERRED_SIZE).addContainerGap(125, Short.MAX_VALUE)).addGroup(Alignment.TRAILING, gl_panel.createSequentialGroup().addContainerGap(264, Short.MAX_VALUE).addComponent(lblX).addContainerGap()));
-		gl_panel.setVerticalGroup(gl_panel.createParallelGroup(Alignment.LEADING).addGroup(gl_panel.createSequentialGroup().addContainerGap().addComponent(lblX).addGap(31).addComponent(lblDownloading).addPreferredGap(ComponentPlacement.RELATED).addComponent(txtE, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE).addPreferredGap(ComponentPlacement.RELATED).addComponent(lblPassword, GroupLayout.PREFERRED_SIZE, 32, GroupLayout.PREFERRED_SIZE).addPreferredGap(ComponentPlacement.RELATED).addComponent(txtP, GroupLayout.PREFERRED_SIZE, 36, GroupLayout.PREFERRED_SIZE).addGap(18).addComponent(btnLogin).addContainerGap(42, Short.MAX_VALUE)));
+		gl_panel.setHorizontalGroup(gl_panel.createParallelGroup(Alignment.TRAILING).addGroup(gl_panel.createSequentialGroup().addContainerGap().addComponent(lblDownloading, GroupLayout.DEFAULT_SIZE, 300, Short.MAX_VALUE).addContainerGap()).addGroup(gl_panel.createSequentialGroup().addGap(113).addComponent(btnLogin, GroupLayout.PREFERRED_SIZE, 82, GroupLayout.PREFERRED_SIZE).addContainerGap(125, Short.MAX_VALUE)).addGroup(gl_panel.createSequentialGroup().addContainerGap(55, Short.MAX_VALUE).addComponent(txtE, GroupLayout.PREFERRED_SIZE, 215, GroupLayout.PREFERRED_SIZE).addGap(50)).addGroup(gl_panel.createSequentialGroup().addContainerGap(54, Short.MAX_VALUE).addComponent(txtP, GroupLayout.PREFERRED_SIZE, 215, GroupLayout.PREFERRED_SIZE).addGap(51)).addGroup(Alignment.LEADING, gl_panel.createSequentialGroup().addContainerGap().addComponent(lblPassword, GroupLayout.DEFAULT_SIZE, 300, Short.MAX_VALUE).addContainerGap()));
+		gl_panel.setVerticalGroup(gl_panel.createParallelGroup(Alignment.LEADING).addGroup(gl_panel.createSequentialGroup().addGap(56).addComponent(lblDownloading).addPreferredGap(ComponentPlacement.RELATED).addComponent(txtE, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE).addPreferredGap(ComponentPlacement.RELATED).addComponent(lblPassword, GroupLayout.PREFERRED_SIZE, 32, GroupLayout.PREFERRED_SIZE).addPreferredGap(ComponentPlacement.RELATED).addComponent(txtP, GroupLayout.PREFERRED_SIZE, 36, GroupLayout.PREFERRED_SIZE).addGap(18).addComponent(btnLogin).addContainerGap(42, Short.MAX_VALUE)));
 		panel.setLayout(gl_panel);
 		contentPane.setLayout(gl_contentPane);
 		panel.setProgress(100);

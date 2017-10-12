@@ -9,6 +9,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Enumeration;
@@ -23,6 +24,7 @@ import com.google.gson.GsonBuilder;
 import com.mojang.authlib.properties.PropertyMap;
 
 import grunt.ClientAuthentication.AuthenticationResponse;
+import grunt.json.F;
 import grunt.json.JSONArray;
 import grunt.json.JSONObject;
 import grunt.ui.ProgressGameCrash;
@@ -58,13 +60,14 @@ public class Client
 	public static double y = 0;
 	private DLQ q;
 	private static GMap<String, String> artifactRemapping;
+	public static GList<String> lines = new GList<String>();
 
 	public Client()
 	{
 		Dimension dimension = Toolkit.getDefaultToolkit().getScreenSize();
 		x = (int) ((dimension.getWidth() - 320) / 2);
 		y = (int) ((dimension.getHeight() - 303) / 2);
-		fbase = new File(new File(System.getProperty("user.home")), "Oberon");
+		fbase = new File(new File(Grunt.localfs ? "." : System.getProperty("user.home")), "Oberon");
 		fasm = new File(fbase, "client");
 		fauth = new File(fasm, "auth.ksg");
 		fgame = new File(fbase, "game");
@@ -194,9 +197,9 @@ public class Client
 		arguments.add("--gameDir");
 		arguments.add(main.getAbsolutePath());
 		arguments.add("--assetsDir");
-		arguments.add(fobjects.getAbsolutePath());
+		arguments.add("/assets");
 		arguments.add("--assetsIndex");
-		arguments.add(new File(fasm, "asset-index.json").getAbsolutePath());
+		arguments.add("/assets/asset-index.json");
 		arguments.add("--uuid");
 		arguments.add(auth.getUuid());
 		arguments.add("--accessToken");
@@ -231,31 +234,44 @@ public class Client
 		ProcessBuilder builder = new ProcessBuilder(arguments);
 
 		builder.directory(main);
-		builder.redirectErrorStream(true);
-		builder.inheritIO();
 		System.out.println("==========================================================================");
 		System.out.println("Launching Client!");
 
-		new Thread()
+		Process process = builder.start();
+		BufferedReader bu = new BufferedReader(new InputStreamReader(process.getInputStream()));
+		String line;
+		int count = 0;
+
+		while((line = bu.readLine()) != null)
 		{
-			@Override
-			public void run()
+			if(line.contains("LWJGL Version: 2.9.1"))
 			{
-				try
-				{
-					Thread.sleep(5000);
-				}
-
-				catch(InterruptedException e)
-				{
-					e.printStackTrace();
-				}
-
+				System.out.println("[GRUNT]: CLOSE UI");
 				ru.setVisible(false);
 			}
-		}.start();
 
-		return builder.start().waitFor();
+			String km = "";
+
+			if(line.contains(":"))
+			{
+				km = line.split(":")[line.split(":").length - 1];
+			}
+
+			else
+			{
+				km = line;
+			}
+
+			ProgressRunning.lblLog.setText(km);
+			System.out.println("[CLIENT]: " + km);
+			ProgressRunning.panel.setProgress((int) (((double) count / 121.0) * 100));
+			ProgressRunning.label.setText(F.pc(((double) count / 121.0), 0));
+			count++;
+		}
+
+		int code = process.waitFor();
+
+		return code;
 	}
 
 	private List<File> getLibClasspath(File libs)
@@ -332,7 +348,7 @@ public class Client
 	{
 		File vm = new File(fasm, "version-manifest.json");
 		File vmv = new File(fasm, "manifest.json");
-		File iid = new File(fasm, "asset-index.json");
+		File iid = new File(fassets, "asset-index.json");
 		File cli = new File(fbin, "client.jar");
 		File rxm = new File(fasm, "version.json");
 		File cms = new File(fasm, "cms.gct");
@@ -402,6 +418,17 @@ public class Client
 			File fr = new File(fgame, "resourcepacks");
 			File fx = new File(fr, "main");
 			File f = new File(fx, key);
+			File d = new File(fobjects, hashRoot);
+
+			if(key.endsWith(".ogg"))
+			{
+				continue;
+			}
+
+			if(key.endsWith(".png"))
+			{
+				continue;
+			}
 
 			if(key.startsWith("minecraft"))
 			{
@@ -409,7 +436,25 @@ public class Client
 			}
 
 			f.getParentFile().mkdirs();
-			q.q("http://resources.download.minecraft.net/" + hashRoot + "/" + hash, f, size);
+			File k = f;
+			q.q("http://resources.download.minecraft.net/" + hashRoot + "/" + hash, f, size, new Runnable()
+			{
+				@Override
+				public void run()
+				{
+					try
+					{
+						System.out.println("Copy asset: " + k + " > " + d);
+						d.mkdirs();
+						Files.copy(k, new File(d, hash));
+					}
+
+					catch(IOException e)
+					{
+						e.printStackTrace();
+					}
+				}
+			});
 		}
 
 		for(int i = 0; i < libraries.length(); i++)
