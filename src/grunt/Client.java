@@ -241,6 +241,7 @@ public class Client
 		BufferedReader bu = new BufferedReader(new InputStreamReader(process.getInputStream()));
 		String line;
 		int count = 0;
+		int vec = 181;
 
 		while((line = bu.readLine()) != null)
 		{
@@ -265,8 +266,8 @@ public class Client
 
 			ProgressRunning.lblLog.setText(km);
 			System.out.println("[CLIENT]: " + km);
-			ProgressRunning.panel.setProgress((int) (((double) count / 121.0) * 100));
-			ProgressRunning.label.setText(F.pc(((double) count / 121.0), 0));
+			ProgressRunning.panel.setProgress((int) (((double) count / (double) vec) * 100));
+			ProgressRunning.label.setText(F.pc(((double) count / (double) vec), 0));
 			count++;
 		}
 
