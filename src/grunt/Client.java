@@ -76,7 +76,7 @@ public class Client
 		fbin = new File(fbase, "bin");
 		fnatives = new File(fbin, "natives");
 		flibs = new File(fbin, "libs");
-		q = new DLQ(1);
+		q = new DLQ(4);
 		fobjects.mkdirs();
 		fasm.mkdirs();
 		fnatives.mkdirs();
