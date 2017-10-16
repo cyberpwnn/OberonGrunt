@@ -39,6 +39,7 @@ import grunt.util.JavaInfo;
 import grunt.util.OSF;
 import grunt.util.OSF.OS;
 import grunt.util.OldPropertyMapSerializer;
+import squawk.Squawk;
 
 public class Client
 {
@@ -352,21 +353,23 @@ public class Client
 		File vmv = new File(fasm, "manifest.json");
 		File iid = new File(fassets, "asset-index.json");
 		File cli = new File(fbin, "client.jar");
-		File rxm = new File(fasm, "version.json");
-		File cms = new File(fasm, "cms.gct");
-		String dlx = URLX.CMS;
+		File pmda = new File(fasm, "patch.mda");
+		File patchFolder = new File(fasm, "patches");
+		patchFolder.mkdirs();
 		ps = new ProgressStart();
 		q.q(URLX.VERSION_META, vm);
 
-		if(rxm.exists())
+		if(pmda.exists())
 		{
-			rxm.delete();
+			pmda.delete();
 		}
 
-		q.q(URLX.RDM, rxm);
+		q.q(URLX.PDS_META, pmda);
 		q.flush();
-		JSONObject vrs = readJSON(rxm);
-		dlx = dlx.replace("%v%", vrs.getString("version"));
+		BufferedReader bu = new BufferedReader(new FileReader(pmda));
+		String line = bu.readLine();
+		bu.close();
+		int patchNumber = Integer.valueOf(line.split(":")[1].trim());
 		JSONObject jvm = readJSON(vm);
 		writeJSON(jvm, vm);
 		JSONArray ja = jvm.getJSONArray("versions");
@@ -392,16 +395,6 @@ public class Client
 		JSONObject client = downloads.getJSONObject("client");
 		q.q(assetIndex.getString("url"), iid);
 		q.flush();
-		long sd = Long.valueOf(vrs.getString("size"));
-		boolean extract = false;
-
-		if(!cms.exists() || cms.length() != sd)
-		{
-			cms.delete();
-			System.out.println("Game Content out of date or missing. Downloading.");
-			q.q(dlx, cms, sd);
-			extract = true;
-		}
 
 		JSONObject assets = readJSON(iid);
 		JSONArray libraries = manifest.getJSONArray("libraries");
@@ -573,33 +566,44 @@ public class Client
 			}
 		}
 
+		Squawk.setup(patchFolder, fgame);
+
+		int cpa = patchNumber;
+		boolean missing = false;
+		List<Integer> missed = new ArrayList<Integer>();
+
+		for(int i = 1; i <= cpa; i++)
+		{
+			File patchFile = new File(patchFolder, "P." + i);
+
+			if(!patchFile.exists())
+			{
+				System.out.println("Missing Patch #" + i);
+				q.q(URLX.PDS + i, patchFile);
+				missing = true;
+				missed.add(i);
+			}
+
+			else
+			{
+				System.out.println("Reading Patch #" + i);
+			}
+		}
+
 		q.flush();
-		inject(cms, fgame, extract);
+
+		if(missing)
+		{
+			System.out.println("Patching Game...");
+			Squawk.applyAllPatches(missed);
+		}
+
 		cleanup();
 		hackOptions();
 		System.out.println("Game Downloaded");
 		ps.setVisible(false);
 		x = ps.getLocation().getX();
 		y = ps.getLocation().getY();
-	}
-
-	private void inject(File zip, File dir, boolean ex)
-	{
-		if(ex)
-		{
-			dir.mkdirs();
-			System.out.println("Game Extract Requested");
-
-			try
-			{
-				extractAll(zip, dir);
-			}
-
-			catch(IOException e)
-			{
-				e.printStackTrace();
-			}
-		}
 	}
 
 	private void hackOptions() throws IOException
@@ -771,7 +775,7 @@ public class Client
 		}
 	}
 
-	private static void extractAll(File zip, File lfolder) throws IOException
+	public static void extractAll(File zip, File lfolder) throws IOException
 	{
 		final ZipFile file = new ZipFile(zip);
 
