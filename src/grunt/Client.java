@@ -242,7 +242,7 @@ public class Client
 		BufferedReader bu = new BufferedReader(new InputStreamReader(process.getInputStream()));
 		String line;
 		int count = 0;
-		int vec = 181;
+		int vec = 114;
 
 		while((line = bu.readLine()) != null)
 		{
