@@ -63,6 +63,11 @@
 	</repositories>
 	<dependencies>
 		<dependency>
+			<groupId>org.cyberpwn</groupId>
+			<artifactId>GLang</artifactId>
+			<version>1.0</version>
+		</dependency>
+		<dependency>
 			<groupId>com.mojang</groupId>
 			<artifactId>authlib</artifactId>
 			<version>1.5.22</version>
