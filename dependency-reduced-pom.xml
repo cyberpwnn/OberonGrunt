@@ -54,6 +54,14 @@
       <url>https://libraries.minecraft.net/</url>
     </repository>
   </repositories>
+  <dependencies>
+    <dependency>
+      <groupId>org.cyberpwn</groupId>
+      <artifactId>GLang</artifactId>
+      <version>1.0</version>
+      <scope>compile</scope>
+    </dependency>
+  </dependencies>
   <properties>
     <maven.compiler.source>1.8</maven.compiler.source>
     <maven.compiler.target>1.8</maven.compiler.target>
